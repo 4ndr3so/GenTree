@@ -10,3 +10,20 @@ export interface CircleData {
       id: string;
       draggable: boolean;
     }
+
+export interface TreeNode {
+  id: string;
+  parentId: string | null;
+  x: number;
+  y: number;
+  label: string;
+}
+
+export interface PersonNode {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  connection?: string; // Optional connection to another node
+  children?: PersonNode[]; // Optional children nodes
+}
