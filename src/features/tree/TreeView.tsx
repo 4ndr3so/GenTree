@@ -1,49 +1,53 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // ✅ GOOD: React components from react-konva
 import { Stage, Layer, Circle, Text, Line } from 'react-konva';
 import type { BaseProps, TreeNode,PersonNode } from '../../types/types';
 import { CircleInfo } from './CircleInfo';
 import { CreateConection } from './UtilTree/CreateConection';
 import { Person } from '../../Model/Person';
+import { useFamilyTree } from '../../hooks/useFamilyTree';
 
-
-type TreeViewProps = BaseProps & {
-  
+type TreeViewProps = {
+  className?: string;
 };
 
 
-const TreeView = ({ className }: TreeViewProps) => {
-  const radius = 40; // Default radius for the circles
-  const defaultSpace=100;
-  const [selectedNode, setSelectedNode] = useState<Person[] | null>(
-    [
-      new Person(100, 50, 'Daniela', '1'),
-      new Person(250, 50, 'Lorna', '2')
-    ]
-  );
 
+const TreeView = ({ className }: TreeViewProps) => {
+  const { people, addPerson } = useFamilyTree();
+
+  useEffect(() => {
+    // Crear árbol genealógico
+    const padre = new Person(100, 50, 'Padre', 'p1');
+    const madre = new Person(0, 0, 'Madre', 'm1');
+    //const hijo1 = new Person(0, 0, 'Hijo 1', 'h1');
+    //const hijo2 = new Person(0, 0, 'Hijo 2', 'h2');
+
+    padre.relacion.setPartner(madre);
+    //padre.relacion.addChild(hijo1, madre);
+    //padre.relacion.addChild(hijo2, madre);
+
+    addPerson(padre);
+ 
+    //addPerson(hijo2);
+
+  }, []);
 
   return (
     <div className={className}>
       <h1 className="text-2xl font-bold mb-4">Tree View</h1>
-      <p className="mb-4">This is a placeholder for the tree view component.</p>
       <Stage width={window.innerWidth} height={window.innerHeight}>
-       
         <Layer>
-          {selectedNode && selectedNode.map((node) => (
-            <React.Fragment key={node.id}>
-              <CircleInfo
-                text={node.getName()}
-                x={node.getPosition().x}
-                y={node.getPosition().y}
-                radius={radius}
-   
-              />
- 
-            </React.Fragment>
+          {people.map(p => (
+            <CircleInfo
+              key={p.id}
+              text={p.name}
+              x={p.postionX}
+              y={p.postionY}
+              radius={25}
+            />
           ))}
-
-
+          
         </Layer>
       </Stage>
     </div>

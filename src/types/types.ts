@@ -27,3 +27,9 @@ export interface PersonNode {
   connection?: string; // Optional connection to another node
   children?: PersonNode[]; // Optional children nodes
 }
+
+export type Linea = {
+  fromId: string;
+  toId: string;
+  points: [number, number, number, number];
+};
