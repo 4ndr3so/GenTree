@@ -1,15 +1,33 @@
-import type { Person } from "./Person";
-
+import { Person } from "./Person";
 
 export class Relacion {
   private currentPartner: Person | null = null;
   private exPartners: Person[] = [];
   private children: Person[] = [];
   private owner: Person;
+  private parents: [Person | null, Person | null] = [null, null];
 
   constructor(owner: Person) {
     this.owner = owner;
   }
+
+  setParents(p1: Person, p2: Person) {
+    this.parents = [p1, p2];
+  }
+  
+  setParent(p: Person) {
+    const personPadTemp= new Person("temp", "temp");
+
+  if (!this.parents[0]) {
+    this.parents[0] = p;
+       //simpre agrega solo un padre
+      p.relacion.addChild(this.owner, personPadTemp); // pasar el otro padre si existe
+    
+    return;
+  }
+
+
+}
 
   setPartner(newPartner: Person) {
     if (this.currentPartner && this.currentPartner.id !== newPartner.id) {
@@ -26,9 +44,8 @@ export class Relacion {
   addChild(child: Person, otherParent: Person) {
     if (!this.children.includes(child)) {
       this.children.push(child);
-      child.setParents(this.owner, otherParent);
+      child.relacion.setParents(this.owner, otherParent);
 
-      // Añadir al otro padre si no tiene el hijo
       if (!otherParent.relacion.children.includes(child)) {
         otherParent.relacion.children.push(child);
       }
@@ -45,19 +62,30 @@ export class Relacion {
     return this.currentPartner;
   }
 
+
   // ✅ Obtener ex-parejas
   getExPartners(): Person[] {
     return this.exPartners;
   }
+  setExPartner(ex: Person) {
+    if (!this.exPartners.find(p => p.id === ex.id)) {
+      this.exPartners.push(ex);
 
-  // ✅ Obtener padres (de la persona actual)
-  getParents(): (Person | null)[] {
-    return this.owner.getParents();
+      // Asegurar bidireccionalidad (opcional)
+      if (!ex.relacion.getExPartners().some(p => p.id === this.owner.id)) {
+        ex.relacion.setExPartner(this.owner);
+      }
+    }
   }
 
-  // ✅ Obtener hermanos (mismo padre y madre)
+  // ✅ Obtener padres
+  getParents(): [Person | null, Person | null] {
+    return this.parents;
+  }
+
+  // ✅ Obtener hermanos
   getSiblings(): Person[] {
-    const [p1, p2] = this.owner.getParents();
+    const [p1, p2] = this.parents;
 
     const fromP1 = p1?.relacion.getChildren() || [];
     const fromP2 = p2?.relacion.getChildren() || [];

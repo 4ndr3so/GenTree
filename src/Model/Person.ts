@@ -3,28 +3,29 @@
 import { Relacion } from './Relacion';
 
 export class Person {
-  postionX: number;
-  postionY: number;
+  postionX: number= 0;
+  postionY: number= 0;
   name: string;
   id: string;
   relacion: Relacion;
-  private parents: [Person | null, Person | null];
+  isRoot: boolean = false;
 
-  constructor(x: number, y: number, name: string, id: string) {
-   this.postionX = -1;
-    this.postionY = -1;
+  constructor( name: string, id: string) {
+
     this.name = name;
     this.id = id;
-    this.parents = [null, null];
+
     this.relacion = new Relacion(this);
   }
-
-  setParents(p1: Person, p2: Person) {
-    this.parents = [p1, p2];
+  setPosition(x: number, y: number) {
+    this.postionX = x;
+    this.postionY = y;
   }
-
-  getParents(): [Person | null, Person | null] {
-    return this.parents;
+  setIsRoot(isRoot: boolean) {
+    this.isRoot = isRoot;
+  }
+  getIsRoot() {
+    return this.isRoot;
   }
 
   getId() {
@@ -46,6 +47,7 @@ export class Person {
       children: this.relacion.getChildren(),
       parents: this.relacion.getParents(),
       siblings: this.relacion.getSiblings(),
+
     };
   }
 }
