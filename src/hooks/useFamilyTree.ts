@@ -1,39 +1,46 @@
 import { useState } from 'react';
+import { savePeopleToLocalStorage } from '../features/tree/UtilTree/savePeopleToLocalStorage';
 import { PositionUtils, type TipoRelacion } from "../features/tree/UtilTree/PositionUtils";
 import type { Person } from "../Model/Person";
-import { savePeopleToLocalStorage } from '../features/tree/UtilTree/savePeopleToLocalStorage';
-
+import {type RootState } from "../store";
 import { deserializePeopleArray } from '../features/tree/UtilTree/deserializePeopleArray';
+import { addPerson as addPersonAction, setPeople, resetPeople } from "../store/personSlice";
+// hooks/useFamilyTreeRedux.ts
+import { useDispatch, useSelector } from 'react-redux';
 
 
 export function useFamilyTree() {
-  const [people, setPeople] = useState<Person[]>([]);
+  const dispatch = useDispatch();
+  const plainPeople = useSelector((state: RootState) => state.person.people);
+  const people = deserializePeopleArray(plainPeople);
 
   const addPerson = (person: Person, rela: TipoRelacion) => {
-    setPeople(prev => {
-      if (prev.find(p => p.id === person.id)) return prev;
+    const exists = people.find(p => p.id === person.id);
+    if (!exists) {
       const newPosition = PositionUtils.calcularPosicion(person, rela);
       person.setPosition(newPosition.x, newPosition.y);
-      const updated = [...prev, person];
-      savePeopleToLocalStorage(updated);
-      return updated;
-    });
+      const updated = [...people, person];
+      localStorage.setItem("familyTree", JSON.stringify(updated.map(p => p.toPlainObject())));
+      dispatch(addPersonAction(person.toPlainObject()));
+    }
   };
 
   const addTreeSaved = (peopleSaved: Person[]) => {
-    setPeople(peopleSaved);
+    localStorage.setItem("familyTree", JSON.stringify(peopleSaved.map(p => p.toPlainObject())));
+    dispatch(setPeople(peopleSaved.map(p => p.toPlainObject())));
   };
 
- const loadSavedTree = () => {
-  const raw = localStorage.getItem("familyTree");
-  const parsed = JSON.parse(raw!);
-  const people = deserializePeopleArray(parsed);
-  setPeople(people);
+  const loadSavedTree = () => {
+    const raw = localStorage.getItem("familyTree");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      dispatch(setPeople(parsed));
+    }
   };
-
 
   const resetTree = () => {
-    setPeople([]);
+    localStorage.removeItem("familyTree");
+    dispatch(resetPeople());
   };
 
   return {
@@ -41,6 +48,6 @@ export function useFamilyTree() {
     addPerson,
     resetTree,
     addTreeSaved,
-    loadSavedTree
+    loadSavedTree,
   };
 }

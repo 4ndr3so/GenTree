@@ -3,8 +3,11 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Person } from "../Model/Person";
 
 
+
+type PlainPerson = ReturnType<Person["toPlainObject"]>; // tipo plano
+
 type State = {
-  people: Person[];
+  people: PlainPerson[];
 };
 
 const initialState: State = {
@@ -15,10 +18,10 @@ const personSlice = createSlice({
   name: "person",
   initialState,
   reducers: {
-    setPeople: (state, action: PayloadAction<Person[]>) => {
+    setPeople: (state, action: PayloadAction<PlainPerson[]>) => {
       state.people = action.payload;
     },
-    addPerson: (state, action: PayloadAction<Person>) => {
+    addPerson: (state, action: PayloadAction<PlainPerson>) => {
       const exists = state.people.find(p => p.id === action.payload.id);
       if (!exists) {
         state.people.push(action.payload);
@@ -26,7 +29,7 @@ const personSlice = createSlice({
     },
     resetPeople: (state) => {
       state.people = [];
-    }
+    },
   },
 });
 

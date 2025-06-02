@@ -112,26 +112,33 @@ addTreeSaved(peopleSaved)
 
   }, []);
 
+   const handleClick = (e: any) => {
+    const shape = e.target;
+    console.log("Clicked ID:", shape.id());
+  };
+
   return (
-    <div className={className}>
-      <h1 className="text-2xl font-bold mb-4">Tree View</h1>
+    <>
+
       <Stage width={window.innerWidth} height={window.innerHeight}>
         <Layer>
           {DrawChildrenLines(people)}
           {drawPartnerLines(people)}  
           {people.map(p => (
             <CircleInfo
+              id={p.id}
               key={p.id}
               text={p.name}
               x={p.postionX}
               y={p.postionY}
               radius={25}
+              onClick={handleClick}
             />
           ))}
            
         </Layer>
       </Stage>
-    </div>
+    </>
   );
 };
 

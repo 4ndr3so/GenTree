@@ -8,14 +8,16 @@ type CircleInfoProps = {
     radius:number,
     fill?:string,
     stroke?:string
+    id: string
+    onClick?: (e: any) => void;
 }
-export const CircleInfo = ({ text, x, y, radius, fill = '#bdb9b9', stroke = 'black', }: CircleInfoProps) => {
+export const CircleInfo = ({id, text, x, y, radius, fill = '#bdb9b9', stroke = 'black', onClick }: CircleInfoProps) => {
 
     
     const numeLetters = text.length;
   return (
     <>
-        <Circle x={x} y={y} radius={radius} fill={fill} stroke={stroke} />
+        <Circle id={id} x={x} y={y} radius={radius} fill={fill} stroke={stroke} onClick={onClick} />
         <Text text={text} x={x -(numeLetters*3.2)} y={y-6 } fontSize={14} />
     </>
   )
