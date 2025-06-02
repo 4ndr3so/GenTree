@@ -18,7 +18,7 @@ export const CanvasMenu = ({ className,onAddNode  }: CanvasMenuProps) => {
 
   return (
     <div className={`${className}`}>
-      <AddNodeBtn onClick={onAddNode}>Add new item</AddNodeBtn>
+      <AddNodeBtn onClick={onAddNode}>Add person</AddNodeBtn>
     </div>
   )
 }
