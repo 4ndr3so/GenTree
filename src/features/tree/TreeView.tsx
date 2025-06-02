@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 // ✅ GOOD: React components from react-konva
 import { Stage, Layer, Circle, Text, Line } from 'react-konva';
-import type { BaseProps, TreeNode,PersonNode } from '../../types/types';
+
 import { CircleInfo } from './CircleInfo';
 
-import { Person } from '../../Model/Person';
+
 import { useFamilyTree } from '../../hooks/useFamilyTree';
 import { drawPartnerLines } from './drawPartnerLines';
 import { DrawChildrenLines } from './DrawChildrenLines';
-import { deserializePerson } from './UtilTree/deserializePerson';
+
 
 type TreeViewProps = {
   className?: string;

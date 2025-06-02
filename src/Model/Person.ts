@@ -50,4 +50,20 @@ export class Person {
 
     };
   }
+  
+  toPlainObject(): any {
+  return {
+    id: this.id,
+    name: this.name,
+    postionX: this.postionX,
+    postionY: this.postionY,
+    isRoot: this.getIsRoot(),
+    relacion: {
+      currentPartner: this.relacion.getCurrentPartner()?.id ?? null,
+      exPartners: this.relacion.getExPartners().map(p => p.id),
+      children: this.relacion.getChildren().map(p => p.id),
+      parents: this.relacion.getParents().map(p => p?.id ?? null)
+    }
+  };
+}
 }
