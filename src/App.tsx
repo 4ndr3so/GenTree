@@ -28,7 +28,7 @@ const [circles, setCircles] = useState<CircleData[]>([]);
     <>
       <div className="grid grid-cols-4 gap-4">
         <CanvasMenu className='col-span-1' onAddNode={addCircle} />
-        <TreeView className='col-span-3' circles={circles} />
+        <TreeView className='col-span-3'  />
       </div>
     </>
   )

@@ -3,11 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { Stage, Layer, Circle, Text, Line } from 'react-konva';
 import type { BaseProps, TreeNode,PersonNode } from '../../types/types';
 import { CircleInfo } from './CircleInfo';
-import { CreateConection } from './UtilTree/CreateConection';
+
 import { Person } from '../../Model/Person';
 import { useFamilyTree } from '../../hooks/useFamilyTree';
 import { drawPartnerLines } from './drawPartnerLines';
 import { DrawChildrenLines } from './DrawChildrenLines';
+import { deserializePerson } from './UtilTree/deserializePerson';
 
 type TreeViewProps = {
   className?: string;
@@ -16,32 +17,47 @@ type TreeViewProps = {
 
 
 const TreeView = ({ className }: TreeViewProps) => {
-  const { people, addPerson } = useFamilyTree();
+  const { people, addPerson, addTreeSaved, loadSavedTree } = useFamilyTree();
 
   useEffect(() => {
+    loadSavedTree();
     // Crear árbol genealógico
-    const padre = new Person( 'Padre a', 'p1');
+   /*const padre = new Person( 'Padre a', 'p1');
     padre.setIsRoot(true);
     const madre = new Person( 'Madre a', 'm1');
     const hijo1 = new Person( 'Hijo 1a', 'h1');
-    const hijo2 = new Person('Hijo 2a', 'h2');
+   const hijo2 = new Person('Hijo 2a', 'h2');
     const hijo3 = new Person('Hijo 3a', 'h3');
     const hijo4 = new Person('Hijo 4a', 'h4');
     
 
     padre.relacion.setPartner(madre);
     padre.relacion.addChild(hijo1, madre);
-    padre.relacion.addChild(hijo2, madre);
-    padre.relacion.addChild(hijo3, madre);
-    padre.relacion.addChild(hijo4, madre);
+    //padre.relacion.addChild(hijo2, madre);
+    //padre.relacion.addChild(hijo3, madre);
+    //padre.relacion.addChild(hijo4, madre);
 
+    
     addPerson(padre, 'root');
     addPerson(madre, 'pareja');
     addPerson(hijo1, 'hijo');
-    addPerson(hijo2, 'hijo');
+    /*addPerson(hijo2, 'hijo');
     addPerson(hijo3, 'hijo');
-    addPerson(hijo4, 'hijo');
+    addPerson(hijo4, 'hijo');*/
 
+    //deserializar desde JSON
+    
+    
+ /*
+
+const p1= deserializePerson(jsonDto);
+const p2= deserializePerson(jsonDto2);
+const p3= deserializePerson(jsondto3);
+const peopleSaved: Person[] = [p1,p2,p3];
+
+addTreeSaved(peopleSaved)
+*/
+/*
     //agregando parejas
     const pareja1 = new Person('P1 h2a', 'p2');
     hijo2.relacion.setPartner(pareja1);
@@ -87,10 +103,12 @@ const TreeView = ({ className }: TreeViewProps) => {
     const bisnieto = new Person('Bisnieto n3a', 'n4');
     nietoHijo4.relacion.addChild(bisnieto, parejaNietoHijo4);
     addPerson(bisnieto, 'hijo');
-    //agregar padre a p1 n3a
-    const padreParejaNietoHijo4 = new Person('Padre pareja Nieto hijo 4a', 'p8');
-    parejaNietoHijo4.relacion.setParent(padreParejaNietoHijo4);
-    addPerson(padreParejaNietoHijo4, 'padre');
+
+    //add parent to root
+    const abuelo = new Person('Abuelo', 'abuelo');
+    padre.relacion.setParent(abuelo);
+    addPerson(abuelo, 'padre');
+*/
 
   }, []);
 

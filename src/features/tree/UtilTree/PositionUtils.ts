@@ -8,7 +8,7 @@ export class PositionUtils {
     persona: Person,
     newRelation: TipoRelacion
   ): { x: number; y: number } {
-
+    console.log("Calculando posición para:", persona.getName());
     const { currentPartner, parents, siblings, exPartners } = persona.getRelation();
 
     //get todas las personas que pueden influir en la posición
@@ -24,27 +24,27 @@ export class PositionUtils {
 
     // crea una person temporal para evitar modificar la original
     // y para poder calcular la posición sin afectar el estado actual
-    const persTemp = new Person(persona.getName(), persona.getId());
-    persTemp.setPosition(persona.postionX, persona.postionY);
+    const persTempPos = new Person(persona.getName(), persona.getId());
+    persTempPos.setPosition(persona.postionX, persona.postionY);
     const canvasWidth: number = window.innerWidth;
     let x = 0;
     let y = 0;
 
     // 1️⃣ Nodo raíz — sin padres ni pareja
-    if (persTemp.getIsRoot()) {
-      persTemp.postionX = canvasWidth / 2;
-      persTemp.postionY = 100;
+    if (persTempPos.getIsRoot()) {
+      persTempPos.postionX = canvasWidth / 2;
+      persTempPos.postionY = 100;
 
-      return { x: persTemp.postionX, y: persTemp.postionY };
+      return { x: persTempPos.postionX, y: persTempPos.postionY };
 
     }
 
     // 2️⃣ Pareja actual — a la derecha del actual
     if (newRelation === "pareja" && currentPartner) {
-      persTemp.postionX = currentPartner.postionX + 100;
-      persTemp.postionY = currentPartner.postionY;
+      persTempPos.postionX = currentPartner.postionX + 100;
+      persTempPos.postionY = currentPartner.postionY;
       this.tryPlacePartner(currentPartner, persona);
-      return { x: persTemp.postionX, y: persTemp.postionY };
+      return { x: persTempPos.postionX, y: persTempPos.postionY };
     }
 
     // 3️⃣ Hijo — debe tener al menos un padre
@@ -56,7 +56,7 @@ export class PositionUtils {
         : (p1?.postionX || p2?.postionX || canvasWidth / 2);
 
       const baseY = (p1?.postionY || p2?.postionY || 100) + 100;
-      console.log(baseY, p1?.getName(), p1?.postionY, p2?.getName(), p2?.postionY);
+     // console.log(baseY, p1?.getName(), p1?.postionY, p2?.getName(), p2?.postionY);
       // Agrupar hermanos reales (incluyendo el actual)
       const hermanos = (p1?.relacion.getChildren() || [])
         .filter(h => (p2 ? p2.relacion.getChildren().includes(h) : true));
@@ -93,14 +93,28 @@ export class PositionUtils {
     }
 
     if (newRelation === "padre") {
-        const [p1, p2] = persona.relacion.getParents();
-        if (!p1 && !p2) {
-          return PositionUtils.posicionarEnArbolSecundario(persona, temp);
-        }
-        console.log("Padre encontrado:", p1?.getName(), p2?.getName());
-  }
+      const p1 = persona.relacion.getChildren()[0];
+     
+      // Solo se puede agregar padre si no tiene, y si es root
+      if (p1.getIsRoot()) {
+        // Convertir al nuevo padre en root
+        //no se puede cambiar root, se recalcula la posición
+       // p1.setIsRoot(false);
+       // persona.setIsRoot(true);
+
+        // Posicionarlo 50px a la izquierda y 100px arriba
+        const { x, y } = p1.getPosition();
+       
+        
+        persTempPos.postionX = x - 50;
+        persTempPos.postionY = y - 100;
+        
+        return { x: persTempPos.postionX, y: persTempPos.postionY };
+      }
+    }
 
     // 4️⃣ Fallback
+    console.warn("No se pudo calcular la posición para la relación:", persona.getName());
     persona.postionX = canvasWidth / 2;
     persona.postionY = 100;
     return { x: persona.postionX, y: persona.postionY };
