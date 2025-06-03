@@ -29,9 +29,10 @@ export class PositionUtils {
     const canvasWidth: number = window.innerWidth;
     let x = 0;
     let y = 0;
-
+    console.log("Relaciones:", persona);
     // 1️⃣ Nodo raíz — sin padres ni pareja
     if (persTempPos.getIsRoot()) {
+
       persTempPos.postionX = canvasWidth / 2;
       persTempPos.postionY = 100;
 

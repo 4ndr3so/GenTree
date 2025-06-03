@@ -9,11 +9,13 @@ export class Person {
   id: string;
   relacion: Relacion;
   isRoot: boolean = false;
+  age: number = 10;
 
-  constructor( name: string, id: string) {
+  constructor( name: string, id: string, age: number=10) {
 
     this.name = name;
     this.id = id;
+    this.age = age;
 
     this.relacion = new Relacion(this);
   }
@@ -21,6 +23,14 @@ export class Person {
     this.postionX = x;
     this.postionY = y;
   }
+  setAge(age: number) {
+    this.age = age; 
+  }
+
+  getAge() {
+    return this.age;
+  }
+
   setIsRoot(isRoot: boolean) {
     this.isRoot = isRoot;
   }
@@ -58,6 +68,7 @@ export class Person {
     postionX: this.postionX,
     postionY: this.postionY,
     isRoot: this.getIsRoot(),
+    age: this.age,
     relacion: {
       currentPartner: this.relacion.getCurrentPartner()?.id ?? null,
       exPartners: this.relacion.getExPartners().map(p => p.id),

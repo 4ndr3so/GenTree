@@ -4,19 +4,38 @@ import { CanvasMenu } from "./CanvasMenu";
 import { SidebarItem } from "./SidebarItem";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store";
-import { addPerson } from "../../store/personSlice";
+import { addPerson,addRootPerson } from "../../store/personSlice";
 import { Button } from "@mui/material";
 import PersonForm from "../PersonForm";
+import { useFamilyTree } from "../../hooks/useFamilyTree";
+import { Person } from "../../Model/Person";
+import AddRelationButtons from "../AddRelationButtonsProps";
 
+type NewPerson = {
+  name: string
+  age: number
+}
 
 // AppLayout.tsx
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-      const people = useSelector((state: RootState) => state.person.people);
+const { people, addPerson, addTreeSaved, loadSavedTree } = useFamilyTree();
+      
   const dispatch = useDispatch<AppDispatch>();
 
-  const addPersonHandler = () => {
+  const addPersonHandler = (data: NewPerson) => {
+    //root
+    if (people.length === 0) {
+      const person = new Person(data.name, crypto.randomUUID(), data.age);
+      person.setIsRoot(true);
+      addPerson(person, "root");
+    }else {
+      //not root
+      const person = new Person(data.name, crypto.randomUUID(), data.age);
+      addPerson(person, "pareja");
+    }
 
   }
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
@@ -26,13 +45,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           <div className="mt-8 text-xs uppercase text-gray-300">Modify Tree</div>
           
-           <Button variant="contained" className="" 
-           onClick={() => dispatch(addPerson({ id: crypto.randomUUID(), name: 'New', age: 30 }))}>
-                    Add Person
-                </Button>
+        
             <PersonForm onSubmit={addPersonHandler} >
 
             </PersonForm>
+            <AddRelationButtons onAdd={(relacion) => console.log("Agregar relación:", relacion)} />
             <div className="mt-8 text-xs uppercase text-gray-300">Other options</div>
           <SidebarItem icon="H" text="Heroicons" team />
           <SidebarItem icon="T" text="Tailwind Labs" team />

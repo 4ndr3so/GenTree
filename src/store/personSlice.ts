@@ -18,6 +18,18 @@ const personSlice = createSlice({
   name: "person",
   initialState,
   reducers: {
+
+    //no es necesaria?
+     addRootPerson(state, action: PayloadAction<PlainPerson>) {
+      if (state.people.length === 0) {
+        //add the root person only if no one exists
+        const rootPerson = {...action.payload,isRoot: true}
+        console.log("Adding root person:", rootPerson);
+        // mark it explicitly as root in our state‐shape
+        state.people.push(rootPerson)
+      }
+      // if people already exist, do nothing (or you could throw/console.warn)
+    },
     setPeople: (state, action: PayloadAction<PlainPerson[]>) => {
       state.people = action.payload;
     },
@@ -33,5 +45,5 @@ const personSlice = createSlice({
   },
 });
 
-export const { setPeople, addPerson, resetPeople } = personSlice.actions;
+export const { setPeople, addPerson, resetPeople, addRootPerson } = personSlice.actions;
 export default personSlice.reducer;

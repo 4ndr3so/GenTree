@@ -16,6 +16,7 @@ export function useFamilyTree() {
 
   const addPerson = (person: Person, rela: TipoRelacion) => {
     const exists = people.find(p => p.id === person.id);
+    
     if (!exists) {
       const newPosition = PositionUtils.calcularPosicion(person, rela);
       person.setPosition(newPosition.x, newPosition.y);

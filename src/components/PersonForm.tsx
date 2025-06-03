@@ -5,8 +5,8 @@ type Props = {
 };
 
 export default function PersonForm({ onSubmit }: Props) {
-  const [name, setName] = useState("");
-  const [age, setAge] = useState<number | "">("");
+  const [name, setName] = useState("juan");
+  const [age, setAge] = useState<number | "">(30);
   const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
