@@ -8,12 +8,20 @@ export function deserializePeopleArray(data: any[]): Person[] {
   const lookup: Record<string, any> = {};
   data.forEach(d => { lookup[d.id] = d });
 
-  // Primera pasada: crear todas las instancias
+  // Primera pasada: crear todas las instancias con datos actualizados
   for (const d of data) {
     if (!map.has(d.id)) {
-      const p = new Person(d.name, d.id);
+      const p = new Person(
+        d.firstName ?? '',
+        d.lastName ?? '',
+        d.id,
+        d.gender ?? 'U',
+        d.birthDate ?? '2000-01-01'
+      );
       p.setPosition(d.postionX, d.postionY);
-      p.setIsRoot(d.isRoot);
+      p.setIsRoot(d.isRoot ?? false);
+      if (d.familyId) p.familyId = d.familyId;
+      if (d.gedcomId) p.gedcomId = d.gedcomId;
       map.set(d.id, p);
     }
   }

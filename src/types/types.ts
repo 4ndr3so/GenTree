@@ -33,3 +33,9 @@ export type Linea = {
   toId: string;
   points: [number, number, number, number];
 };
+export type PersonGedCom = {
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  gender?: 'M' | 'F' | 'U';
+};

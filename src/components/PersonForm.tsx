@@ -1,52 +1,68 @@
 import { useState } from "react";
 
+import type { PersonGedCom } from "../types/types";
+
 type Props = {
-  onSubmit: (data: { name: string; age: number }) => void;
+  onSubmit: (data: PersonGedCom) => void;
+  person: PersonGedCom
 };
 
-export default function PersonForm({ onSubmit }: Props) {
-  const [name, setName] = useState("juan");
-  const [age, setAge] = useState<number | "">(30);
+export default function PersonForm({ onSubmit,person }: Props) {
+  const [firstName, setFirstName] = useState(person.firstName || "");
+  const [lastName, setLastName] = useState(person.lastName || "");
+  const [birthDate, setBirthDate] = useState(person.birthDate || "");
+  const [gender, setGender] = useState(person.gender || "U");
   const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
+    if (!firstName.trim()) {
       setError("El nombre es requerido.");
       return;
     }
-    if (age === "" || isNaN(Number(age)) || Number(age) <= 0) {
-      setError("La edad debe ser un número válido mayor que cero.");
+    if (birthDate === "" || isNaN(Number(birthDate)) || Number(birthDate) <= 0) {
+      setError("La fecha de nacimiento debe ser un número válido mayor que cero.");
       return;
     }
     setError("");
-    onSubmit({ name: name.trim(), age: Number(age) });
-    setName("");
-    setAge("");
+    onSubmit({ firstName: firstName.trim(), lastName: lastName.trim(), birthDate: birthDate.trim(), gender });
+    setFirstName("");
+    setLastName("");
+    setBirthDate("");
+    setGender("U");
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 rounded shadow-md w-full max-w-sm">
-      <h2 className="text-lg font-bold text-blue-800">Agregar Persona</h2>
+      <h2 className="text-lg font-bold text-blue-800">Add Person</h2>
 
       <div>
-        <label className="block mb-1 text-sm font-medium text-blue-800">Nombre</label>
+        <label className="block mb-1 text-sm font-medium text-blue-800">First Name</label>
         <input
           type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
+          value={firstName}
+          onChange={e => setFirstName(e.target.value)}
           className="w-full border px-3 py-2 rounded text-sm text-blue-800"
         />
       </div>
 
       <div>
-        <label className="block mb-1 text-sm font-medium text-blue-800">Edad</label>
+        <label className="block mb-1 text-sm font-medium text-blue-800">Last Name</label>
         <input
-          type="number"
-          value={age}
-          onChange={e => setAge(e.target.value === "" ? "" : Number(e.target.value))}
+          type="text"
+          value={lastName}
+          onChange={e => setLastName(e.target.value)}
           className="w-full border px-3 py-2 rounded text-sm text-blue-800"
-          min={1}
+        />
+      </div>
+
+      <div>
+        <label className="block mb-1 text-sm font-medium text-blue-800">BirthDate</label>
+        <input
+          type="text"
+          value={birthDate}
+          onChange={e => setBirthDate(e.target.value || "")}
+          className="w-full border px-3 py-2 rounded text-sm text-blue-800"
         />
       </div>
 

@@ -13,7 +13,12 @@ export function serializePeople(people: Person[]): any[] {
 
     serialized.push({
       id: p.id,
-      name: p.name,
+      gedcomId: p.gedcomId,
+      familyId: p.familyId,
+      firstName: p.firstName,
+      lastName: p.lastName,
+      birthDate: p.birthDate,
+      gender: p.gender,
       postionX: p.postionX,
       postionY: p.postionY,
       isRoot: p.getIsRoot(),
@@ -21,7 +26,7 @@ export function serializePeople(people: Person[]): any[] {
         currentPartner: p.relacion.getCurrentPartner()?.id ?? null,
         exPartners: p.relacion.getExPartners().map(e => e.id),
         children: p.relacion.getChildren().map(c => c.id),
-        parents: p.relacion.getParents().map(p => p?.id ?? null)
+        parents: p.relacion.getParents().map(parent => parent?.id ?? null)
       }
     });
   }

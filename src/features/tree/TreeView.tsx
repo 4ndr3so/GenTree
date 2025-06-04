@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 // ✅ GOOD: React components from react-konva
 import { Stage, Layer, Circle, Text, Line } from 'react-konva';
 
@@ -8,6 +8,7 @@ import { CircleInfo } from './CircleInfo';
 import { useFamilyTree } from '../../hooks/useFamilyTree';
 import { drawPartnerLines } from './drawPartnerLines';
 import { DrawChildrenLines } from './DrawChildrenLines';
+import { Person } from '../../Model/Person';
 
 
 type TreeViewProps = {
@@ -18,7 +19,13 @@ type TreeViewProps = {
 
 const TreeView = ({ className }: TreeViewProps) => {
   const { people, addPerson, addTreeSaved, loadSavedTree } = useFamilyTree();
+  useEffect(() => {
+    //createa the first person 
+    const padre = new Person('First', 'Prime', 'p1', 'M', '2023-01-01');
+    padre.setIsRoot(true);
+    addPerson(padre, 'root');
 
+  }, []);
 
    const handleClick = (e: any) => {
     const shape = e.target;
@@ -34,9 +41,9 @@ const TreeView = ({ className }: TreeViewProps) => {
           {drawPartnerLines(people)}  
           {people.map(p => (
             <CircleInfo
-              id={p.id}
-              key={p.id}
-              text={p.name}
+              id={p.getFamilyId()+"-"+p.getId()}
+              key={p.getFamilyId()+"-"+p.getId()}
+              text={p.getFirstName()}
               x={p.postionX}
               y={p.postionY}
               radius={25}

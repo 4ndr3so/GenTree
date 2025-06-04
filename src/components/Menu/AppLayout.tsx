@@ -10,11 +10,9 @@ import PersonForm from "../PersonForm";
 import { useFamilyTree } from "../../hooks/useFamilyTree";
 import { Person } from "../../Model/Person";
 import AddRelationButtons from "../AddRelationButtonsProps";
+import type { PersonGedCom } from "../../types/types";
 
-type NewPerson = {
-  name: string
-  age: number
-}
+
 
 // AppLayout.tsx
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -22,17 +20,12 @@ const { people, addPerson, addTreeSaved, loadSavedTree } = useFamilyTree();
       
   const dispatch = useDispatch<AppDispatch>();
 
-  const addPersonHandler = (data: NewPerson) => {
+  const addPersonHandler = (data: PersonGedCom) => {
     //root
-    if (people.length === 0) {
-      const person = new Person(data.name, crypto.randomUUID(), data.age);
-      person.setIsRoot(true);
-      addPerson(person, "root");
-    }else {
       //not root
-      const person = new Person(data.name, crypto.randomUUID(), data.age);
+      const person = new Person(data.firstName, data.lastName, crypto.randomUUID(), data.gender, data.birthDate);
       addPerson(person, "pareja");
-    }
+    
 
   }
 
@@ -44,9 +37,9 @@ const { people, addPerson, addTreeSaved, loadSavedTree } = useFamilyTree();
         <nav className="flex-1 px-4 space-y-2">
 
           <div className="mt-8 text-xs uppercase text-gray-300">Modify Tree</div>
-          
-        
-            <PersonForm onSubmit={addPersonHandler} >
+
+
+            <PersonForm onSubmit={addPersonHandler} person={{ firstName: "", lastName: "", birthDate: "", gender: "U" }}>
 
             </PersonForm>
             <AddRelationButtons onAdd={(relacion) => console.log("Agregar relación:", relacion)} />

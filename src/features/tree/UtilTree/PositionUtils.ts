@@ -8,7 +8,7 @@ export class PositionUtils {
     persona: Person,
     newRelation: TipoRelacion
   ): { x: number; y: number } {
-    console.log("Calculando posición para:", persona.getName());
+    console.log("Calculando posición para:", persona.getFullName());
     const { currentPartner, parents, siblings, exPartners } = persona.getRelation();
 
     //get todas las personas que pueden influir en la posición
@@ -24,7 +24,7 @@ export class PositionUtils {
 
     // crea una person temporal para evitar modificar la original
     // y para poder calcular la posición sin afectar el estado actual
-    const persTempPos = new Person(persona.getName(), persona.getId());
+    const persTempPos = new Person(persona.getFirstName(), persona.getLastName(),  persona.getId(),persona.getGender(),persona.getBirthDate());
     persTempPos.setPosition(persona.postionX, persona.postionY);
     const canvasWidth: number = window.innerWidth;
     let x = 0;
@@ -115,7 +115,7 @@ export class PositionUtils {
     }
 
     // 4️⃣ Fallback
-    console.warn("No se pudo calcular la posición para la relación:", persona.getName());
+    console.warn("No se pudo calcular la posición para la relación:", persona.getFullName());
     persona.postionX = canvasWidth / 2;
     persona.postionY = 100;
     return { x: persona.postionX, y: persona.postionY };
