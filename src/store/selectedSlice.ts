@@ -1,14 +1,12 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Person } from "../Model/Person";
 
-type PlainPerson = ReturnType<Person["toPlainObject"]>; // tipo plano
 
 const selectedSlice = createSlice({
   name: "selectedPerson",
-  initialState: null as PlainPerson | null,
+  initialState: null as Person | null,
   reducers: {
-    setSelectedPerson: (_state, action: PayloadAction<PlainPerson | null>) => {
-     // console.log("Selected person:", action.payload);
+    setSelectedPerson: (_state, action: PayloadAction<Person | null>) => {
       return action.payload;
     },
   },

@@ -3,12 +3,9 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Person } from "../Model/Person";
 
 
-
-type PlainPerson = ReturnType<Person["toPlainObject"]>; // tipo plano
-
-type State = {
-  people: PlainPerson[],
-  person?: PlainPerson | null, // optional selected person
+export type State = {
+  people: Person[];
+  person?: Person | null;
 };
 
 const initialState: State = {
@@ -19,32 +16,28 @@ const personSlice = createSlice({
   name: "person",
   initialState,
   reducers: {
-
-    //no es necesaria?
-     addRootPerson(state, action: PayloadAction<PlainPerson>) {
+    addRootPersonState(state, action: PayloadAction<Person>) {
       if (state.people.length === 0) {
-        //add the root person only if no one exists
-        const rootPerson = {...action.payload,isRoot: true}
+        const rootPerson = action.payload;
+        rootPerson.setIsRoot(true);
         console.log("Adding root person:", rootPerson);
-        // mark it explicitly as root in our state‐shape
-        state.people.push(rootPerson)
+        state.people.push(rootPerson);
       }
-      // if people already exist, do nothing (or you could throw/console.warn)
     },
-    setPeople: (state, action: PayloadAction<PlainPerson[]>) => {
+    setPeopleState(state, action: PayloadAction<Person[]>) {
       state.people = action.payload;
     },
-    addPerson: (state, action: PayloadAction<PlainPerson>) => {
+    addPersonState(state, action: PayloadAction<Person>) {
       const exists = state.people.find(p => p.id === action.payload.id);
       if (!exists) {
         state.people.push(action.payload);
       }
     },
-    resetPeople: (state) => {
+    resetPeopleState(state) {
       state.people = [];
     },
   },
 });
 
-export const { setPeople, addPerson, resetPeople, addRootPerson } = personSlice.actions;
+export const { setPeopleState, addPersonState, resetPeopleState, addRootPersonState } = personSlice.actions;
 export default personSlice.reducer;

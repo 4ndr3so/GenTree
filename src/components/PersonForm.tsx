@@ -86,9 +86,9 @@ export default function PersonForm({ onSubmit ,person}: Props) {
 
       <button
         type="submit"
-        className="bg-indigo-600 text-blue-800 px-4 py-2 rounded hover:bg-indigo-700 text-sm"
+        className="bg-indigo-600 px-4 py-2 rounded hover:bg-indigo-700 text-sm"
       >
-        Agregar
+        Modify
       </button>
     </form>
   );

@@ -4,7 +4,7 @@ import { PositionUtils, type TipoRelacion } from "../features/tree/UtilTree/Posi
 import type { Person } from "../Model/Person";
 import {type RootState } from "../store";
 import { deserializePeopleArray } from '../features/tree/UtilTree/deserializePeopleArray';
-import { addPerson as addPersonAction, setPeople, resetPeople } from "../store/personSlice";
+import { addPersonState as addPersonAction, setPeopleState, resetPeopleState } from "../store/personSlice";
 // hooks/useFamilyTreeRedux.ts
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedPerson } from '../store/selectedSlice';
@@ -12,12 +12,13 @@ import { setSelectedPerson } from '../store/selectedSlice';
 
 
 export function useFamilyTree() {
+  
   const dispatch = useDispatch();
   const selected = useSelector((state: RootState) => state.selectedPerson);
   const plainPeople = useSelector((state: RootState) => state.person.people);
   const people = deserializePeopleArray(plainPeople);
 
-  const addPerson = (person: Person, rela: TipoRelacion) => {
+  const addPersonToCanvasAndState = (person: Person, rela: TipoRelacion) => {
     const exists = people.find(p => p.id === person.id);
     
     if (!exists) {
@@ -28,7 +29,7 @@ export function useFamilyTree() {
       dispatch(addPersonAction(person.toPlainObject()));
     }
   };
-  const selectPerson = (person: Person | null) => {
+  const selectPersonFromState = (person: Person | null) => {
     //console.log("Selecting person:", selected);
     if (!selected || selected.id !== person?.id) {
       //console.log("Selecting person:", person?.toPlainObject());
@@ -36,30 +37,30 @@ export function useFamilyTree() {
     }
   };
 
-  const addTreeSaved = (peopleSaved: Person[]) => {
+  const addTreeSavedToState = (peopleSaved: Person[]) => {
     localStorage.setItem("familyTree", JSON.stringify(peopleSaved.map(p => p.toPlainObject())));
-    dispatch(setPeople(peopleSaved.map(p => p.toPlainObject())));
+    dispatch(setPeopleState(peopleSaved.map(p => p.toPlainObject())));
   };
 
   const loadSavedTree = () => {
     const raw = localStorage.getItem("familyTree");
     if (raw) {
       const parsed = JSON.parse(raw);
-      dispatch(setPeople(parsed));
+      dispatch(setPeopleState(parsed));
     }
   };
 
   const resetTree = () => {
     localStorage.removeItem("familyTree");
-    dispatch(resetPeople());
+    dispatch(resetPeopleState());
   };
 
   return {
     people,
-    addPerson,
+    addPersonToCanvasAndState,
     resetTree,
-    addTreeSaved,
+    addTreeSavedToState,
     loadSavedTree,
-    selectPerson, // si quieres exponerlo
+    selectPersonFromState,
   };
 }
