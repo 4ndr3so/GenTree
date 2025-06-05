@@ -1,20 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { PersonGedCom } from "../types/types";
+import { useSelector } from "react-redux";
+import {type RootState } from "../store";
 
 type Props = {
   onSubmit: (data: PersonGedCom) => void;
   person: PersonGedCom
 };
 
-export default function PersonForm({ onSubmit,person }: Props) {
-  const [firstName, setFirstName] = useState(person.firstName || "");
-  const [lastName, setLastName] = useState(person.lastName || "");
-  const [birthDate, setBirthDate] = useState(person.birthDate || "");
-  const [gender, setGender] = useState(person.gender || "U");
+export default function PersonForm({ onSubmit ,person}: Props) {
+
+  //console.log("PersonForm", "person:", person);
+
+  const [firstName, setFirstName] = useState(person?.firstName || "");
+  const [lastName, setLastName] = useState(person?.lastName || "");
+  const [birthDate, setBirthDate] = useState(person?.birthDate || "");
+  const [gender, setGender] = useState(person?.gender || "U");
   const [error, setError] = useState("");
 
+  //console.log("PersonForm", "firstName:", firstName, "lastName:", lastName, "birthDate:", birthDate, "gender:", gender);
+//actualiza cuando cambia el person
+  useEffect(() => {
+    setFirstName(person?.firstName || "");
+    setLastName(person?.lastName || "");
+    setBirthDate(person?.birthDate || "");
+    setGender(person?.gender || "U");
+  }, [person]);
+
   const handleSubmit = (e: React.FormEvent) => {
+    
     e.preventDefault();
     if (!firstName.trim()) {
       setError("El nombre es requerido.");
@@ -32,6 +47,7 @@ export default function PersonForm({ onSubmit,person }: Props) {
     setGender("U");
   };
 
+  
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 rounded shadow-md w-full max-w-sm">
       <h2 className="text-lg font-bold text-blue-800">Add Person</h2>

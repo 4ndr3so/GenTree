@@ -18,12 +18,13 @@ type TreeViewProps = {
 
 
 const TreeView = ({ className }: TreeViewProps) => {
-  const { people, addPerson, addTreeSaved, loadSavedTree } = useFamilyTree();
+  const { people, addPerson, addTreeSaved, loadSavedTree,selectPerson } = useFamilyTree();
   useEffect(() => {
     //createa the first person 
     const padre = new Person('First', 'Prime', 'p1', 'M', '2023-01-01');
     padre.setIsRoot(true);
     addPerson(padre, 'root');
+    selectPerson(padre);
 
   }, []);
 

@@ -8,7 +8,7 @@ export class PositionUtils {
     persona: Person,
     newRelation: TipoRelacion
   ): { x: number; y: number } {
-    console.log("Calculando posición para:", persona.getFullName());
+    //console.log("Calculando posición para:", persona.getFullName());
     const { currentPartner, parents, siblings, exPartners } = persona.getRelation();
 
     //get todas las personas que pueden influir en la posición
@@ -29,7 +29,7 @@ export class PositionUtils {
     const canvasWidth: number = window.innerWidth;
     let x = 0;
     let y = 0;
-    console.log("Relaciones:", persona);
+    //console.log("Relaciones:", persona);
     // 1️⃣ Nodo raíz — sin padres ni pareja
     if (persTempPos.getIsRoot()) {
 
@@ -115,7 +115,7 @@ export class PositionUtils {
     }
 
     // 4️⃣ Fallback
-    console.warn("No se pudo calcular la posición para la relación:", persona.getFullName());
+    console.log("No se pudo calcular la posición para la relación:", persona.getFullName());
     persona.postionX = canvasWidth / 2;
     persona.postionY = 100;
     return { x: persona.postionX, y: persona.postionY };

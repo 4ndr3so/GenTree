@@ -7,7 +7,8 @@ import type { Person } from "../Model/Person";
 type PlainPerson = ReturnType<Person["toPlainObject"]>; // tipo plano
 
 type State = {
-  people: PlainPerson[];
+  people: PlainPerson[],
+  person?: PlainPerson | null, // optional selected person
 };
 
 const initialState: State = {

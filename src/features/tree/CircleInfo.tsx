@@ -12,7 +12,7 @@ type CircleInfoProps = {
     onClick?: (e: any) => void;
 }
 export const CircleInfo = ({id, text, x, y, radius, fill = '#bdb9b9', stroke = 'black', onClick }: CircleInfoProps) => {
-  console.log("CircleInfo", id, text, x, y, radius, fill, stroke);
+  //console.log("CircleInfo", id, text, x, y, radius, fill, stroke);
     
     const numeLetters = text.length;
   return (

@@ -7,10 +7,13 @@ import { deserializePeopleArray } from '../features/tree/UtilTree/deserializePeo
 import { addPerson as addPersonAction, setPeople, resetPeople } from "../store/personSlice";
 // hooks/useFamilyTreeRedux.ts
 import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedPerson } from '../store/selectedSlice';
+
 
 
 export function useFamilyTree() {
   const dispatch = useDispatch();
+  const selected = useSelector((state: RootState) => state.selectedPerson);
   const plainPeople = useSelector((state: RootState) => state.person.people);
   const people = deserializePeopleArray(plainPeople);
 
@@ -23,6 +26,13 @@ export function useFamilyTree() {
       const updated = [...people, person];
       localStorage.setItem("familyTree", JSON.stringify(updated.map(p => p.toPlainObject())));
       dispatch(addPersonAction(person.toPlainObject()));
+    }
+  };
+  const selectPerson = (person: Person | null) => {
+    //console.log("Selecting person:", selected);
+    if (!selected || selected.id !== person?.id) {
+      //console.log("Selecting person:", person?.toPlainObject());
+      dispatch(setSelectedPerson(person?.toPlainObject() ));
     }
   };
 
@@ -50,5 +60,6 @@ export function useFamilyTree() {
     resetTree,
     addTreeSaved,
     loadSavedTree,
+    selectPerson, // si quieres exponerlo
   };
 }

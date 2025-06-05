@@ -11,22 +11,28 @@ import { useFamilyTree } from "../../hooks/useFamilyTree";
 import { Person } from "../../Model/Person";
 import AddRelationButtons from "../AddRelationButtonsProps";
 import type { PersonGedCom } from "../../types/types";
+import { setSelectedPerson } from "../../store/selectedSlice";
+
 
 
 
 // AppLayout.tsx
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-const { people, addPerson, addTreeSaved, loadSavedTree } = useFamilyTree();
-      
+  const selected = useSelector((state: RootState) => state.selectedPerson);
+
+//const { people, addPerson, addTreeSaved, loadSavedTree } = useFamilyTree();
+    //  console.log("Selected:", selected);
   const dispatch = useDispatch<AppDispatch>();
 
   const addPersonHandler = (data: PersonGedCom) => {
     //root
       //not root
-      const person = new Person(data.firstName, data.lastName, crypto.randomUUID(), data.gender, data.birthDate);
-      addPerson(person, "pareja");
+      //const person = new Person(data.firstName, data.lastName, crypto.randomUUID(), data.gender, data.birthDate);
+     // addPerson(person, "pareja");
+   
+  }
+  const addRelacion = (tipo: string) => {
     
-
   }
 
   return (
@@ -39,10 +45,9 @@ const { people, addPerson, addTreeSaved, loadSavedTree } = useFamilyTree();
           <div className="mt-8 text-xs uppercase text-gray-300">Modify Tree</div>
 
 
-            <PersonForm onSubmit={addPersonHandler} person={{ firstName: "", lastName: "", birthDate: "", gender: "U" }}>
+            <PersonForm onSubmit={addPersonHandler} person={selected ?? { firstName: '', lastName: '', birthDate: '', gender: 'U' }} />
 
-            </PersonForm>
-            <AddRelationButtons onAdd={(relacion) => console.log("Agregar relación:", relacion)} />
+            <AddRelationButtons onAdd={(a) => addRelacion(a)} />
             <div className="mt-8 text-xs uppercase text-gray-300">Other options</div>
           <SidebarItem icon="H" text="Heroicons" team />
           <SidebarItem icon="T" text="Tailwind Labs" team />
