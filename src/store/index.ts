@@ -4,6 +4,7 @@ import personReducer from './personSlice';
 import  selectedPersonReducer  from './selectedSlice';
 
 
+
 const loggerMiddleware = (storeAPI: any) => (next: any) => (action: any) => {
   //console.log('Dispatching:', action.type, action.payload);
   const result = next(action);
@@ -18,7 +19,10 @@ const rootReducer = combineReducers({
 
 export const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(loggerMiddleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // ✅ Aquí se desactiva el error por objetos Person
+    }).concat(loggerMiddleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

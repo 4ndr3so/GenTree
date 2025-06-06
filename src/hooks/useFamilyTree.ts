@@ -10,13 +10,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedPerson } from '../store/selectedSlice';
 
 
-
+//serializar y deserializar los objetos de persona
 export function useFamilyTree() {
   
   const dispatch = useDispatch();
   const selected = useSelector((state: RootState) => state.selectedPerson);
-  const plainPeople = useSelector((state: RootState) => state.person.people);
-  const people = deserializePeopleArray(plainPeople);
+  const people = useSelector((state: RootState) => state.person.people);
+
 
   const addPersonToCanvasAndState = (person: Person, rela: TipoRelacion) => {
     const exists = people.find(p => p.id === person.id);
@@ -24,11 +24,15 @@ export function useFamilyTree() {
     if (!exists) {
       const newPosition = PositionUtils.calcularPosicion(person, rela);
       person.setPosition(newPosition.x, newPosition.y);
-      const updated = [...people, person];
-      localStorage.setItem("familyTree", JSON.stringify(updated.map(p => p.toPlainObject())));
-      dispatch(addPersonAction(person.toPlainObject()));
+
+      //const updated = [...people, person];
+     // localStorage.setItem("familyTree", JSON.stringify(updated.map(p => p.toPlainObject())));
+      
+     dispatch(addPersonAction(person));
     }
   };
+
+  //solo se debe saber el seleccionado
   const selectPersonFromState = (person: Person | null) => {
     //console.log("Selecting person:", selected);
     if (!selected || selected.id !== person?.id) {

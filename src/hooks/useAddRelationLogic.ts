@@ -28,11 +28,12 @@ export function useAddRelationLogic() {
       }
 
       case 'child': {
-        const newPartner = createPerson('Firstname', 'Lastname', '2000-01-01');
-        selected.relacion.setPartner(newPartner);
-        addPersonToCanvasAndState(newPartner, 'pareja');
-
-        selected.relacion.addChild(newPerson, newPartner);
+       // const newPartner = createPerson('Firstname', 'Lastname', '2000-01-01');
+      //  selected.relacion.setPartner(newPartner);
+       // addPersonToCanvasAndState(newPartner, 'pareja');
+       const currentPartner = selected.relacion.getCurrentPartner() || createPerson('Partner', 'Default', '1970-01-01');
+      
+        selected.relacion.addChild(newPerson, currentPartner);
         addPersonToCanvasAndState(newPerson, 'hijo');
         break;
       }

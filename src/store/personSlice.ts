@@ -36,8 +36,15 @@ const personSlice = createSlice({
     resetPeopleState(state) {
       state.people = [];
     },
+    updatePersonState: (state, action: PayloadAction<Person>) => {
+      const index = state.people.findIndex(p => p.id === action.payload.id);
+      if (index !== -1) {
+        state.people[index] = action.payload;
+      }
+    }
+
   },
 });
 
-export const { setPeopleState, addPersonState, resetPeopleState, addRootPersonState } = personSlice.actions;
+export const { setPeopleState, addPersonState, resetPeopleState, addRootPersonState, updatePersonState } = personSlice.actions;
 export default personSlice.reducer;

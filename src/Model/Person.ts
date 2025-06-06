@@ -37,13 +37,13 @@ export class Person {
 
   toPlainObject(): any {
     return {
-      id: this.id,
-      gedcomId: this.gedcomId,
-      familyId: this.familyId,
       firstName: this.firstName,
       lastName: this.lastName,
       postionX: this.postionX,
       postionY: this.postionY,
+      id: this.id,
+      gedcomId: this.gedcomId,
+      familyId: this.familyId,
       isRoot: this.getIsRoot(),
       gender: this.gender,
       birthDate: this.birthDate,
