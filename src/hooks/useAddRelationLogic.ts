@@ -28,26 +28,40 @@ export function useAddRelationLogic() {
       }
 
       case 'child': {
-       // const newPartner = createPerson('Firstname', 'Lastname', '2000-01-01');
-      //  selected.relacion.setPartner(newPartner);
-       // addPersonToCanvasAndState(newPartner, 'pareja');
-       const currentPartner = selected.relacion.getCurrentPartner() || createPerson('Partner', 'Default', '1970-01-01');
-      
+        // Verifica si el seleccionado tiene pareja
+        let currentPartner = selected.relacion.getCurrentPartner();
+
+        // Si no tiene pareja, crear una por defecto y asignarla
+        if (!currentPartner) {
+          currentPartner = createPerson('Partner', 'Default', '1970-01-01');
+          selected.relacion.setPartner(currentPartner);
+          addPersonToCanvasAndState(currentPartner, 'pareja');
+        }
+
+        // Crear el nuevo hijo
         selected.relacion.addChild(newPerson, currentPartner);
         addPersonToCanvasAndState(newPerson, 'hijo');
         break;
       }
 
       case 'sibling': {
-        const mother = createPerson('Mother', 'Default', '1970-01-01');
-        const father = createPerson('Father', 'Default', '1970-01-01');
+        let [mother, father] = selected.relacion.getParents();
 
-        selected.relacion.setParents(mother, father);
+        // Si no hay padres, crear por defecto y asignarlos
+        if (!mother || !father) {
+          mother = createPerson('Mother', 'Default', '1970-01-01');
+          father = createPerson('Father', 'Default', '1970-01-01');
+
+          selected.relacion.setParents(mother, father);
+
+          addPersonToCanvasAndState(mother, 'padre');
+          addPersonToCanvasAndState(father, 'padre');
+        }
+
+        // Agregar el nuevo hijo (hermano) a los padres existentes
         father.relacion.addChild(newPerson, mother);
-
-        addPersonToCanvasAndState(mother, 'padre');
-        addPersonToCanvasAndState(father, 'padre');
         addPersonToCanvasAndState(newPerson, 'hijo');
+
         break;
       }
 
@@ -55,10 +69,12 @@ export function useAddRelationLogic() {
         const otherParent = createPerson('Parent', 'Default', '1970-01-01');
 
         newPerson.relacion.addChild(selected, otherParent);
+
+        newPerson.relacion.setPartner(otherParent);
         selected.relacion.setParents(newPerson, otherParent);
 
         addPersonToCanvasAndState(newPerson, 'padre');
-        addPersonToCanvasAndState(otherParent, 'padre');
+        addPersonToCanvasAndState(otherParent, 'pareja');
         break;
       }
     }
