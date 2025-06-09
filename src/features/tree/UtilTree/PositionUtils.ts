@@ -7,12 +7,13 @@ type Position = { x: number; y: number };
 
 
 export class PositionUtils {
-  static calcularPosicion(persona: Person, newRelation: TipoRelacion): Position {
+  static calcularPosicion(persona: Person, newRelation: TipoRelacion, canvasWidth = window.innerWidth): Position {
     switch (newRelation) {
       case "root":
-        return this.posicionarRoot(persona);
+        return this.posicionarRoot(persona, canvasWidth);
       case "pareja":
         return this.posicionarPareja(persona);
+      // return this.posicionarPareja(persona, persona.relacion.getAllPeople());
       case "hijo":
 
         return this.posicionarHijo(persona);
@@ -25,8 +26,19 @@ export class PositionUtils {
     }
   }
 
-  static posicionarRoot(persona: Person): Position {
-    const x = window.innerWidth / 2;
+
+  static getRootAncestor(person: Person): Person {
+    const [parent1, parent2] = person.relacion.getParents();
+    if (parent1) return this.getRootAncestor(parent1);
+    if (parent2) return this.getRootAncestor(parent2);
+    return person;
+  }
+
+
+  ////////////////////////////////////////////////////////7
+  static posicionarRoot(persona: Person, canvasWidth: number): Position {
+
+    const x = canvasWidth / 2;
     const y = 100;
     persona.setPosition(x, y);
     return { x, y };
@@ -50,7 +62,7 @@ export class PositionUtils {
       affected.forEach(p => {
         const pos = p.getPosition();
         p.setPosition(pos.x - 100, pos.y);
-        this.shiftDescendants(p, -100);
+        this.shiftDescendants(p, -100, 0);
       });
 
       persona.setPosition(refPos.x, refPos.y);
@@ -96,21 +108,23 @@ export class PositionUtils {
     });
   }
 
-  static shiftDescendants(person: Person, dx: number): void {
+  static shiftDescendants(person: Person, dx: number, dy: number): void {
     const pareja = person.relacion.getCurrentPartner();
     const children = person.relacion.getChildren();
 
     if (pareja) {
       const pos = pareja.getPosition();
-      pareja.setPosition(pos.x + dx, pos.y);
+      pareja.setPosition(pos.x + dx, pos.y + dy);
     }
 
     for (const child of children) {
       const pos = child.getPosition();
-      child.setPosition(pos.x + dx, pos.y);
-      this.shiftDescendants(child, dx);
+      child.setPosition(pos.x + dx, pos.y + dy);
+      this.shiftDescendants(child, dx, dy);
     }
   }
+
+
 
   static posicionarEnArbolSecundario(reference: Person, allPeople: Person[]): Position {
     const { maxX } = this.getMainTreeWidth(allPeople);
@@ -165,11 +179,11 @@ export class PositionUtils {
     }
 
     // Desplazar descendientes con función recursiva existente
-    this.shiftDescendants(person, dx);
+    this.shiftDescendants(person, dx, 0);
 
     // Si pareja tiene hijos en común, desplazarlos también
     if (pareja) {
-      this.shiftDescendants(pareja, dx);
+      this.shiftDescendants(pareja, dx, 0);
     }
   }
 
@@ -182,51 +196,87 @@ export class PositionUtils {
     }
     return current;
   }
-  
- static reorganizarHijosConRelaciones(parents: [Person | null, Person | null], includeNew?: Person) {
-  const [p1, p2] = parents;
-  if (!p1 && !p2) return;
 
-  const rawChildren = [
-    ...(p1?.relacion.getChildren() ?? []),
-    ...(p2?.relacion.getChildren() ?? []),
-    ...(includeNew ? [includeNew] : []),
-  ];
+  static reorganizarHijosConRelaciones(parents: [Person | null, Person | null], includeNew?: Person) {
+    const [p1, p2] = parents;
+    if (!p1 && !p2) return;
 
-  const hijosUnicos = Array.from(new Map(rawChildren.map(p => [p.id, p])).values())
-    .sort((a, b) => a.id.localeCompare(b.id));
+    const rawChildren = [
+      ...(p1?.relacion.getChildren() ?? []),
+      ...(p2?.relacion.getChildren() ?? []),
+      ...(includeNew ? [includeNew] : []),
+    ];
 
-  if (hijosUnicos.length === 0) return;
+    const hijosUnicos = Array.from(new Map(rawChildren.map(p => [p.id, p])).values())
+      .sort((a, b) => a.id.localeCompare(b.id));
 
-  const centroX = p1 && p2
-    ? (p1.postionX + p2.postionX) / 2
-    : (p1?.postionX || p2?.postionX || window.innerWidth / 2);
+    if (hijosUnicos.length === 0) return;
 
-  const baseY = (p1?.postionY || p2?.postionY || 100) + 100;
-  const spacing = 100;
+    const centroX = p1 && p2
+      ? (p1.postionX + p2.postionX) / 2
+      : (p1?.postionX || p2?.postionX || window.innerWidth / 2);
 
-  // Paso 1: construir la lista de "nodos visuales" (hijos + parejas)
-  const nodosVisuales: Person[] = [];
-  for (const hijo of hijosUnicos) {
-    nodosVisuales.push(hijo);
-    const pareja = hijo.relacion.getCurrentPartner();
-    if (pareja) nodosVisuales.push(pareja);
+    const baseY = (p1?.postionY || p2?.postionY || 100) + 100;
+    const spacing = 100;
+
+    // Paso 1: construir la lista de "nodos visuales" (hijos + parejas)
+    const nodosVisuales: Person[] = [];
+    for (const hijo of hijosUnicos) {
+      nodosVisuales.push(hijo);
+      const pareja = hijo.relacion.getCurrentPartner();
+      if (pareja) nodosVisuales.push(pareja);
+    }
+
+    // Paso 2: calcular inicio centrado
+    const totalWidth = (nodosVisuales.length - 1) * spacing;
+    const startX = centroX - totalWidth / 2;
+
+    // Paso 3: asignar posiciones a todos
+    nodosVisuales.forEach((node, index) => {
+      const newX = startX + index * spacing;
+      const oldX = node.postionX;
+      const dx = newX - oldX;
+
+      node.setPosition(newX, baseY);
+      this.shiftDescendants(node, dx, 0);
+    });
   }
 
-  // Paso 2: calcular inicio centrado
-  const totalWidth = (nodosVisuales.length - 1) * spacing;
-  const startX = centroX - totalWidth / 2;
 
-  // Paso 3: asignar posiciones a todos
-  nodosVisuales.forEach((node, index) => {
-    const newX = startX + index * spacing;
-    const oldX = node.postionX;
-    const dx = newX - oldX;
+  static detectarYResolverColision(
+    persona: Person,
+    people: Person[],
+    tolerancia: number = 20,
+    offsetY: number = 100
+  ) {
+    const pos = persona.getPosition();
 
-    node.setPosition(newX, baseY);
-    this.shiftDescendants(node, dx);
-  });
-}
+    for (const otro of people) {
+      if (otro.id === persona.id) continue;
+
+      const pos2 = otro.getPosition();
+      const dx = Math.abs(pos.x - pos2.x);
+      const dy = Math.abs(pos.y - pos2.y);
+
+      if (dx <= tolerancia && dy <= tolerancia) {
+        // Colisión detectada: mover hacia abajo
+        persona.setPosition(pos.x, pos.y + offsetY);
+
+        const pareja = persona.relacion.getCurrentPartner();
+        if (pareja) {
+          const parejaPos = pareja.getPosition();
+          pareja.setPosition(parejaPos.x, parejaPos.y + offsetY);
+        }
+
+        for (const hijo of persona.relacion.getChildren()) {
+          this.shiftDescendants(hijo, 0, offsetY);
+        }
+
+        break;
+      }
+    }
+  }
+
 
 
 }

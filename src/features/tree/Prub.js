@@ -179,3 +179,36 @@ addTreeSaved(peopleSaved)
 */
 
   }, []);
+
+
+
+  static posicionarHijo(persona: Person): Position {
+      const [p1, p2] = persona.relacion.getParents();
+      const canvasWidth = window.innerWidth;
+  
+      const centroX = p1 && p2
+        ? (p1.postionX + p2.postionX) / 2
+        : (p1?.postionX || p2?.postionX || canvasWidth / 2);
+  
+      const baseY = (p1?.postionY || p2?.postionY || 100) + 100;
+  
+      const hermanosPadre1 = p1?.relacion.getChildren() || [];
+      const hermanosPadre2 = p2?.relacion.getChildren() || [];
+  
+      const allSiblings = [...hermanosPadre1, ...hermanosPadre2];
+  
+      // Filtrar duplicados por id
+      const uniqueSiblings = Array.from(
+        new Map([...allSiblings, persona].map(p => [p.id, p])).values()
+      ).sort((a, b) => a.id.localeCompare(b.id));
+  
+      const offset = Math.floor(uniqueSiblings.length / 2);
+  
+      uniqueSiblings.forEach((child, i) => {
+        let x = centroX + (i - offset) * 100;
+        if (uniqueSiblings.length % 2 === 0) x += 50;
+        child.setPosition(x, baseY);
+      });
+  
+      return persona.getPosition();
+    }

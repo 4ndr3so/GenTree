@@ -126,4 +126,29 @@ export class Relacion {
       children: this.children.map(c => c.gedcomId)
     };
   }
+  getAllPeople(): Person[] {
+    const visited = new Set<string>();
+    const queue: Person[] = [this.owner];
+    const allPeople: Person[] = [];
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      if (visited.has(current.id)) continue;
+
+      visited.add(current.id);
+      allPeople.push(current);
+
+      // Añadir pareja y descendientes
+      if (current.relacion.getCurrentPartner()) {
+        queue.push(current.relacion.getCurrentPartner()!);
+      }
+      for (const child of current.relacion.getChildren()) {
+        if (!visited.has(child.id)) {
+          queue.push(child);
+        }
+      }
+    }
+
+    return allPeople;
+  }
 }

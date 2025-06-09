@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { savePeopleToLocalStorage } from '../features/tree/UtilTree/savePeopleToLocalStorage';
+import { deserializePeopleArray } from '../features/tree/UtilTree/deserializePeopleArray';
 import { PositionUtils, type TipoRelacion } from "../features/tree/UtilTree/PositionUtils";
 import type { Person } from "../Model/Person";
 import {type RootState } from "../store";
-import { deserializePeopleArray } from '../features/tree/UtilTree/deserializePeopleArray';
 import { addPersonState as addPersonAction, setPeopleState, resetPeopleState } from "../store/personSlice";
 // hooks/useFamilyTreeRedux.ts
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedPerson } from '../store/selectedSlice';
+import { useCanvasDimensions } from '../components/context/CanvasDimensionsContext';
 
 
 //serializar y deserializar los objetos de persona
 export function useFamilyTree() {
-  
+  const { width, height } = useCanvasDimensions();
   const dispatch = useDispatch();
   const selected = useSelector((state: RootState) => state.selectedPerson);
   const people = useSelector((state: RootState) => state.person.people);
@@ -22,13 +23,15 @@ export function useFamilyTree() {
     const exists = people.find(p => p.id === person.id);
     
     if (!exists) {
-      const newPosition = PositionUtils.calcularPosicion(person, rela);
+      //console.log(width, height);
+      const newPosition = PositionUtils.calcularPosicion(person, rela,width);
       person.setPosition(newPosition.x, newPosition.y);
-
+       
       //const updated = [...people, person];
-     // localStorage.setItem("familyTree", JSON.stringify(updated.map(p => p.toPlainObject())));
+      //localStorage.setItem("familyTree", JSON.stringify(updated.map(p => p.toPlainObject())));
       
      dispatch(addPersonAction(person));
+     //PositionUtils.resolverColisiones(people); 
     }
   };
 

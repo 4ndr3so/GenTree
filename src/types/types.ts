@@ -11,13 +11,6 @@ export interface CircleData {
       draggable: boolean;
     }
 
-export interface TreeNode {
-  id: string;
-  parentId: string | null;
-  x: number;
-  y: number;
-  label: string;
-}
 
 export interface PersonNode {
   id: string;

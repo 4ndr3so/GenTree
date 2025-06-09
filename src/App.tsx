@@ -6,18 +6,19 @@ import TreeView from './features/tree/TreeView'
 import { CanvasMenu } from './components/Menu/CanvasMenu'
 import type { CircleData } from './types/types'
 import AppLayout from './components/Menu/AppLayout'
+import { CanvasDimensionsProvider } from './components/context/CanvasDimensionsContext'
 
 
 function App() {
 
   return (
-    <>
-      <div className="grid grid-cols-4 gap-4">
+ 
         <AppLayout>
-          <TreeView className='col-span-3' />
+          <CanvasDimensionsProvider>
+            <TreeView />
+          </CanvasDimensionsProvider>
         </AppLayout> 
-      </div>
-    </>
+     
   )
 }
 
