@@ -5,10 +5,10 @@ import { Relacion } from './Relacion';
 export class Person {
   postionX: number = 0;
   postionY: number = 0;
+  firstName: string;
   id: string;
   gedcomId: string;
   familyId: string;
-  firstName: string;
   lastName: string;
   gender: 'M' | 'F' | 'U' = 'U';
   birthDate: string;

@@ -7,7 +7,9 @@ type Position = { x: number; y: number };
 
 
 export class PositionUtils {
+
   static calcularPosicion(persona: Person, newRelation: TipoRelacion, canvasWidth = window.innerWidth): Position {
+
     switch (newRelation) {
       case "root":
         return this.posicionarRoot(persona, canvasWidth);
@@ -45,6 +47,7 @@ export class PositionUtils {
   }
 
   static posicionarPareja(persona: Person): Position {
+
     const currentPartner = persona.relacion.getCurrentPartner();
     if (!currentPartner) return { x: persona.postionX + 100, y: persona.postionY };
 
@@ -70,6 +73,9 @@ export class PositionUtils {
     }
 
     persona.setPosition(targetX, targetY);
+    //colision
+
+
     return { x: targetX, y: targetY };
   }
 
@@ -163,28 +169,39 @@ export class PositionUtils {
 
     return { minX, maxX, width: maxX - minX };
   }
-  static desplazarFamiliaAfectada(person: Person, dx: number): void {
-    const pareja = person.relacion.getCurrentPartner();
-    const hijos = person.relacion.getChildren();
+  static desplazarFamiliaAfectada(person: Person, dx: number): Person[] {
+
+    function clonePerson(p: Person): Person {
+      const clone = new Person(p.firstName, p.lastName, p.id);
+      clone.postionX = p.postionX;
+      clone.postionY = p.postionY;
+      clone.relacion = p.relacion; // share or clone depending on design
+      return clone;
+    }
+    let clone= clonePerson(person);
+    console.log("Desplazando familia afectada por colisión:", clone.getFullName());
+    const pareja = clone.relacion.getCurrentPartner() || new Person("No Partner", "No Partner", "No Partner");
+    const hijos = clone.relacion.getChildren();
 
     // Desplazar persona base
-    const pos = person.getPosition();
-    person.setPosition(pos.x + dx, pos.y);
+    const pos = clone.getPosition();
+    clone.setPosition(pos.x + dx, pos.y);
 
     // Desplazar pareja (mantener 200px)
     if (pareja) {
       const parejaPos = pareja.getPosition();
-      const newX = person.postionX + 200;
+      const newX = clone.postionX + dx;
       pareja.setPosition(newX, parejaPos.y);
     }
 
     // Desplazar descendientes con función recursiva existente
-    this.shiftDescendants(person, dx, 0);
+    this.shiftDescendants(clone, dx, 0);
 
     // Si pareja tiene hijos en común, desplazarlos también
     if (pareja) {
       this.shiftDescendants(pareja, dx, 0);
     }
+    return [clone, pareja, ...hijos];
   }
 
   static getAncestroRaiz(person: Person): Person {
@@ -242,41 +259,84 @@ export class PositionUtils {
     });
   }
 
+   static desplazarFamiliaAfectadaPure(person: Person, dx: number, people: Person[]): Person[] {
+    const updatedMap = new Map<string, Person>();
+    console.log("Desplazando familia afectada por:",person.getFullName());
+    function clonePerson(p: Person): Person {
+      if (updatedMap.has(p.id)) return updatedMap.get(p.id)!;
+      const clone = new Person(p.firstName, p.lastName, p.id);
+      clone.postionX = p.postionX;
+      clone.postionY = p.postionY;
+      clone.relacion = p.relacion; // still shared
+      updatedMap.set(clone.id, clone);
+      return clone;
+    }
 
-  static detectarYResolverColision(
-    persona: Person,
-    people: Person[],
-    tolerancia: number = 20,
-    offsetY: number = 100
-  ) {
-    const pos = persona.getPosition();
+    function cloneAndShift(p: Person) {
+      const c = clonePerson(p);
+      c.setPosition(c.postionX + dx, c.postionY);
+      return c;
+    }
 
-    for (const otro of people) {
-      if (otro.id === persona.id) continue;
+    // Clone and shift core nodes
+    cloneAndShift(person);
+    const pareja = person.relacion.getCurrentPartner();
+    if (pareja) cloneAndShift(pareja);
+    const hijos = person.relacion.getChildren();
+    hijos.forEach(cloneAndShift);
 
-      const pos2 = otro.getPosition();
-      const dx = Math.abs(pos.x - pos2.x);
-      const dy = Math.abs(pos.y - pos2.y);
+    // Use pure descendant shifter
+    this.shiftDescendantsPure(person, dx, 0, updatedMap);
+    if (pareja) this.shiftDescendantsPure(pareja, dx, 0, updatedMap);
 
-      if (dx <= tolerancia && dy <= tolerancia) {
-        // Colisión detectada: mover hacia abajo
-        persona.setPosition(pos.x, pos.y + offsetY);
+    // Replace updated nodes in the array
+    const newPeople = people.map(p => updatedMap.get(p.id) || p);
+    return newPeople;
+  }
 
-        const pareja = persona.relacion.getCurrentPartner();
-        if (pareja) {
-          const parejaPos = pareja.getPosition();
-          pareja.setPosition(parejaPos.x, parejaPos.y + offsetY);
-        }
+  
+  static shiftDescendantsPure(person: Person, dx: number, dy: number, updatedMap: Map<string, Person>): void {
+    const pareja = person.relacion.getCurrentPartner();
+    const children = person.relacion.getChildren();
 
-        for (const hijo of persona.relacion.getChildren()) {
-          this.shiftDescendants(hijo, 0, offsetY);
-        }
+    if (pareja && updatedMap.has(pareja.id)) {
+      const parejaClone = updatedMap.get(pareja.id)!;
+      const pos = parejaClone.getPosition();
+      parejaClone.setPosition(pos.x + dx, pos.y + dy);
+    }
 
-        break;
+    for (const child of children) {
+      if (updatedMap.has(child.id)) {
+        const childClone = updatedMap.get(child.id)!;
+        const pos = childClone.getPosition();
+        childClone.setPosition(pos.x + dx, pos.y + dy);
+        this.shiftDescendantsPure(childClone, dx, dy, updatedMap);
       }
     }
   }
+  static detectarPrimeraColision(
+    personas: Person[],
+    tolerancia = 50
+  ): { nodoA: [Person, Person] } | null {
+    console.log(personas.length)
+    for (let i = 0; i < personas.length; i++) {
+      const a = personas[i];
+      const posA = a.getPosition();
 
+      for (let j = i + 1; j < personas.length; j++) {
+        const b = personas[j];
+        const posB = b.getPosition();
+        //console.log(`Comparando ${posB.x} con ${posA.x}`);
+        const dx = Math.abs(posA.x - posB.x);
+        const dy = Math.abs(posA.y - posB.y);
 
+        if (dx <= tolerancia && dy <= tolerancia) {
+          return { nodoA: [a, b] };
+        }
+      }
+    }
+
+    return null; // No hay colisiones
+  }
 
 }

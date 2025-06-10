@@ -12,6 +12,7 @@ import { Person } from '../../Model/Person';
 import { NodeShape, type ShapeType } from './NodeShape';
 import { BackgroundGradient } from './background/BackgroundGradient';
 import type Konva from 'konva';
+import { PositionUtilsV2 } from './UtilTree/PositionUtilsV2';
 
 
 type TreeViewProps = {
@@ -39,14 +40,69 @@ export default function TreeView({ shapeType = "grand", className }: TreeViewPro
   //for the use of the weells and scroll of the canva
 
   const { people, addPersonToCanvasAndState, addTreeSavedToState, loadSavedTree, selectPersonFromState } = useFamilyTree();
+  
   useEffect(() => {
     //delays the creation of the root person until the canvas is ready
     if (dimensions.width > 20) {
-      const padre = new Person('First', 'Prime', 'p1', 'M', '2023-01-01');
-      padre.setIsRoot(true);
-      addPersonToCanvasAndState(padre, 'root');
+      const root = new Person('First', 'Prime', 'p1', 'M', '2023-01-01');
+      root.setIsRoot(true);
+      const madre = new Person('m1', 'm1', 'p2', 'F', '2023-01-01');
+
+      const hijo1 = new Person('h1', 'h1', 'p3', 'M', '2023-01-01');
+      const hijo2 = new Person('h2', 'h2', 'p4', 'M', '2023-01-01');
+      const hijo3 = new Person('h3', 'h3', 'p5', 'M', '2023-01-01');
       
-      selectPersonFromState(padre);
+      const parejaHijo1= new Person('p1', 'parejaHijo1', 'p6', 'F', '2023-01-01');
+      const hijo1Hijo1 = new Person('hijo1Hijo1', 'hijoHijo1', 'p7', 'M', '2023-01-01');
+      const hijo2Hijo1 = new Person('hijo2Hijo1', 'hijo2Hijo1', 'p10', 'M', '2023-01-01');
+
+      const parejaHijo2 = new Person('p2', 'parejaHijo2', 'p8', 'F', '2023-01-01');
+      const hijo1Hijo2 = new Person('hijo1Hijo2', 'hijoHijo2', 'p9', 'M', '2023-01-01');
+      const hijo2Hijo2 = new Person('hijo2Hijo2', 'hijo2Hijo2', 'p11', 'M', '2023-01-01');
+
+      const parejaHijo2Hijo1 = new Person('parejaHijo2Hijo1', 'parejaHijo2Hijo1', 'p12', 'F', '2023-01-01');
+      
+
+      root.relacion.setPartner(madre);
+      root.relacion.addChild(hijo1, madre);
+      root.relacion.addChild(hijo2, madre);
+      root.relacion.addChild(hijo3, madre);
+
+
+      hijo1.relacion.setPartner(parejaHijo1);
+      hijo1.relacion.addChild(hijo1Hijo1, parejaHijo1);
+      hijo1.relacion.addChild(hijo2Hijo1, parejaHijo1);
+
+
+      hijo2.relacion.setPartner(parejaHijo2);
+      hijo2.relacion.addChild(hijo1Hijo2, parejaHijo2);
+      hijo2.relacion.addChild(hijo2Hijo2, parejaHijo2);
+
+      hijo2Hijo1.relacion.setPartner(parejaHijo2Hijo1);
+      
+      
+
+      ///
+      addPersonToCanvasAndState(root, 'root');
+      addPersonToCanvasAndState(madre, 'pareja');
+      addPersonToCanvasAndState(hijo1, 'hijo');
+      addPersonToCanvasAndState(hijo2, 'hijo');
+      addPersonToCanvasAndState(hijo3, 'hijo');
+      addPersonToCanvasAndState(parejaHijo1, 'pareja');
+      addPersonToCanvasAndState(hijo1Hijo1, 'hijo');
+      addPersonToCanvasAndState(hijo2Hijo1, 'hijo');
+
+      addPersonToCanvasAndState(parejaHijo2, 'pareja');
+      addPersonToCanvasAndState(hijo1Hijo2, 'hijo');
+      addPersonToCanvasAndState(hijo2Hijo2, 'hijo');
+      addPersonToCanvasAndState(parejaHijo2Hijo1, 'pareja');
+      
+      const parejaHijo1Hijo2 = new Person('parejaHijo1Hijo2', 'parejaHijo1Hijo2', 'p13', 'F', '2023-01-01');
+      hijo1Hijo2.relacion.setPartner(parejaHijo1Hijo2);
+      addPersonToCanvasAndState(parejaHijo1Hijo2, 'pareja');
+    
+
+      selectPersonFromState(root);
     }
   }, [dimensions.width]); // <- ahora solo se ejecuta cuando width se actualiza
 

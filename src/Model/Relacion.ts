@@ -126,7 +126,7 @@ export class Relacion {
       children: this.children.map(c => c.gedcomId)
     };
   }
-  getAllPeople(): Person[] {
+  getAllConnections(): Person[] {
     const visited = new Set<string>();
     const queue: Person[] = [this.owner];
     const allPeople: Person[] = [];
@@ -138,17 +138,29 @@ export class Relacion {
       visited.add(current.id);
       allPeople.push(current);
 
-      // Añadir pareja y descendientes
-      if (current.relacion.getCurrentPartner()) {
-        queue.push(current.relacion.getCurrentPartner()!);
+      const { relacion } = current;
+
+      // 💑 Pareja
+      const partner = relacion.getCurrentPartner();
+      if (partner && !visited.has(partner.id)) queue.push(partner);
+
+      // 👶 Hijos
+      for (const child of relacion.getChildren()) {
+        if (!visited.has(child.id)) queue.push(child);
       }
-      for (const child of current.relacion.getChildren()) {
-        if (!visited.has(child.id)) {
-          queue.push(child);
-        }
+
+      // 👴 Padres
+      for (const parent of relacion.getParents()) {
+        if (parent && !visited.has(parent.id)) queue.push(parent);
+      }
+
+      // 💔 Ex-parejas (si quieres mostrar)
+      for (const ex of relacion.getExPartners()) {
+        if (!visited.has(ex.id)) queue.push(ex);
       }
     }
 
     return allPeople;
   }
+
 }
