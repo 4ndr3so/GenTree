@@ -11,6 +11,7 @@ import { setSelectedPerson } from '../store/selectedSlice';
 import { useCanvasDimensions } from '../components/context/CanvasDimensionsContext';
 import { PositionUtilsV2 } from '../features/tree/UtilTree/PositionUtilsV2';
 import { TreeLayoutUtils } from '../features/tree/treeNode/TreeLayoutUtils';
+import { PositionClass } from '../features/tree/UtilTree/PositionClass';
 
 
 //serializar y deserializar los objetos de persona
@@ -19,25 +20,23 @@ export function useFamilyTree() {
   const dispatch = useDispatch();
   const selected = useSelector((state: RootState) => state.selectedPerson);
   const people = useSelector((state: RootState) => state.person.people);
-
+  let updatedPeople = [...people];
 
   const addPersonToCanvasAndState = (person: Person, rela: TipoRelacion) => {
-    const exists = people.find(p => p.id === person.id);
-
+    const exists  = updatedPeople.find(p => p.id === person.id); // <- usa updatedPeople aquí
+    //console.log("from useFamilyTree", people);
     if (!exists) {
       //v1
       //console.log(width, height);
-      const newPosition = PositionUtils.calcularPosicion(person, rela, width);
-      person.setPosition(newPosition.x, newPosition.y);
-
-      const updatedPeople = [...people, person];
-
-      // ✅ Detectar colisiones en la versión actualizada
-
-
-      // ✅ Guarda en Redux*/
+      updatedPeople = [...updatedPeople, person];
+      const newPosition = PositionUtils.calcularPosicion(person, rela, width, updatedPeople);
+     // person.setPosition(newPosition.x, newPosition.y);
+      
+      //v2
+      // ✅ Guarda en Redux*/*
       dispatch(addPersonState(person));
-
+     
+     //  dispatch(modifyPeopleAddPerson(person));
     }
   };
 
@@ -49,24 +48,7 @@ export function useFamilyTree() {
       dispatch(setSelectedPerson(person?.toPlainObject()));
     }
   };
-  useEffect(() => {
-    const colision = PositionUtils.detectarPrimeraColision(people);
-    if (colision) {
-      const [a, b] = colision.nodoA;
-      const parent = a.relacion.getParents()[0];
-      console.log("Colisión detectada entre:", a.getFirstName(), "y", b.getFirstName());
-      if (parent) {
-        const newPeople = PositionUtils.desplazarFamiliaAfectada(parent, -50);
-        console.log(newPeople);
-        // Check if anything actually changed
-        const changed = newPeople.some((p, i) =>
-          p.postionX !== people[i].postionX || p.postionY !== people[i].postionY
-        );
-
-       
-      }
-    }
-  }, [people]);
+  
 
   const addTreeSavedToState = (peopleSaved: Person[]) => {
     localStorage.setItem("familyTree", JSON.stringify(peopleSaved.map(p => p.toPlainObject())));

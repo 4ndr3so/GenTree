@@ -41,10 +41,21 @@ const personSlice = createSlice({
       if (index !== -1) {
         state.people[index] = action.payload;
       }
+    }, modifyPeopleAddPerson(state, action: PayloadAction<Person[]>) {
+      action.payload.forEach(newPerson => {
+        console.log(newPerson.positionX, newPerson.positionY);
+        const existing = state.people.find(p => p.id === newPerson.id);
+        if (existing) {
+          existing.positionX = newPerson.positionX;
+          existing.positionY = newPerson.positionY;
+        } else {
+          state.people.push(newPerson);
+        }
+      });
     }
 
   },
 });
 
-export const { setPeopleState, addPersonState, resetPeopleState, addRootPersonState, updatePersonState } = personSlice.actions;
+export const { setPeopleState, addPersonState, resetPeopleState, addRootPersonState, updatePersonState, modifyPeopleAddPerson } = personSlice.actions;
 export default personSlice.reducer;

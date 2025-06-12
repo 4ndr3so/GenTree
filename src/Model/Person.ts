@@ -3,8 +3,8 @@
 import { Relacion } from './Relacion';
 
 export class Person {
-  postionX: number = 0;
-  postionY: number = 0;
+  positionX: number = 0;
+  positionY: number = 0;
   firstName: string;
   id: string;
   gedcomId: string;
@@ -39,8 +39,8 @@ export class Person {
     return {
       firstName: this.firstName,
       lastName: this.lastName,
-      postionX: this.postionX,
-      postionY: this.postionY,
+      positionX: this.positionX,
+      positionY: this.positionY,
       id: this.id,
       gedcomId: this.gedcomId,
       familyId: this.familyId,
@@ -68,8 +68,8 @@ export class Person {
   }
 
   setPosition(x: number, y: number) {
-    this.postionX = x;
-    this.postionY = y;
+    this.positionX = x;
+    this.positionY = y;
   }
 
   setIsRoot(isRoot: boolean) {
@@ -109,7 +109,7 @@ export class Person {
   }
 
   getPosition() {
-    return { x: this.postionX, y: this.postionY };
+    return { x: this.positionX, y: this.positionY };
   }
 
   getRelation() {
