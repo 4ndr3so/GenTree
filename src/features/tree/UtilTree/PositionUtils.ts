@@ -129,7 +129,7 @@ export class PositionUtils {
 
     persona.setPosition(targetX, targetY);
     
-    this.detectarColision(people, persona);
+ 
 
     return { x: targetX, y: targetY };
   }

@@ -4,7 +4,7 @@ import { deserializePeopleArray } from '../features/tree/UtilTree/deserializePeo
 import { PositionUtils, type TipoRelacion } from "../features/tree/UtilTree/PositionUtils";
 import type { Person } from "../Model/Person";
 import { type RootState } from "../store";
-import { setPeopleState, resetPeopleState, addPersonState } from "../store/personSlice";
+import { setPeopleState, resetPeopleState, addPersonState,modifyPeopleAddPerson } from "../store/personSlice";
 // hooks/useFamilyTreeRedux.ts
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedPerson } from '../store/selectedSlice';
@@ -21,25 +21,53 @@ export function useFamilyTree() {
   const selected = useSelector((state: RootState) => state.selectedPerson);
   const people = useSelector((state: RootState) => state.person.people);
   let updatedPeople = [...people];
+  let newPosition:PositionClass= new PositionClass(width);
 
   const addPersonToCanvasAndState = (person: Person, rela: TipoRelacion) => {
     const exists  = updatedPeople.find(p => p.id === person.id); // <- usa updatedPeople aquí
-    //console.log("from useFamilyTree", people);
     if (!exists) {
-      //v1
-      //console.log(width, height);
       updatedPeople = [...updatedPeople, person];
       const newPosition = PositionUtils.calcularPosicion(person, rela, width, updatedPeople);
-     // person.setPosition(newPosition.x, newPosition.y);
-      
       //v2
       // ✅ Guarda en Redux*/*
       dispatch(addPersonState(person));
-     
-     //  dispatch(modifyPeopleAddPerson(person));
+
     }
   };
 
+
+  const addPersonCanvas = (person: Person, rela: TipoRelacion) => {
+    const exists = updatedPeople.find(p => p.id === person.id);
+    if (!exists) {
+      
+      updatedPeople = [...updatedPeople, person];
+      const pos = newPosition.posicionar(person, rela);
+      person.setPosition(pos.x, pos.y);
+      //v2
+      // ✅ Guarda en Redux
+      dispatch(addPersonState(person));
+    }
+
+    //recursively resolve collisions
+    resolveAllCollisions(updatedPeople);
+  }
+
+    function resolveAllCollisions(people: Person[]): void {
+    const collision = newPosition.detectarPrimeraColision(people);
+
+    if (collision) {
+      const collisionPeople = [collision.nodoA[0], collision.nodoA[1]];
+      const resolvedPeople = newPosition.resolveCollision(people, collisionPeople);
+
+      dispatch(modifyPeopleAddPerson(resolvedPeople));
+
+      // Recursively call again with the updated list
+      //resolveAllCollisions(people);
+    } else {
+      // Base case: no collision found
+      console.log("✅ No collisions found, all people positioned correctly.");
+    }
+}
   //solo se debe saber el seleccionado
   const selectPersonFromState = (person: Person | null) => {
     //console.log("Selecting person:", selected);
@@ -71,6 +99,7 @@ export function useFamilyTree() {
   return {
     people,
     addPersonToCanvasAndState,
+    addPersonCanvas,
     resetTree,
     addTreeSavedToState,
     loadSavedTree,

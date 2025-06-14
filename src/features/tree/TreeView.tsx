@@ -39,47 +39,87 @@ export default function TreeView({ shapeType = "grand", className }: TreeViewPro
 
   //for the use of the weells and scroll of the canva
 
-  const { people, addPersonToCanvasAndState, addTreeSavedToState, loadSavedTree, selectPersonFromState } = useFamilyTree();
+  const { people, addPersonToCanvasAndState, addTreeSavedToState, loadSavedTree, selectPersonFromState,addPersonCanvas } = useFamilyTree();
   
   useEffect(() => {
     //delays the creation of the root person until the canvas is ready
     if (dimensions.width > 20) {
+
+      //it should be in sequense, like in real situation
       const root = new Person('Mama Lilia', 'Pardo', 'r1', 'M', '2023-01-01');
       root.setIsRoot(true);
+      addPersonCanvas(root, 'root');
+
       const madre = new Person('Papa Gonzalo', 'PArdo', 'r2', 'F', '2023-01-01');
+      root.relacion.setPartner(madre);
+      addPersonCanvas(madre, 'pareja');
 
       const hijo1 = new Person('h1', 'h1', 'h1', 'M', '2023-01-01');
+      root.relacion.addChild(hijo1, madre);
+      addPersonCanvas(hijo1, 'hijo');
+
       const hijo2 = new Person('h2', 'h2', 'h2', 'M', '2023-02-01');
+      root.relacion.addChild(hijo2, madre);
+      addPersonCanvas(hijo2, 'hijo');
+
+      const parejaHijo1= new Person('p1', 'parejaHijo1', 'p1h1', 'F', '2023-01-01');
+      hijo1.relacion.setPartner(parejaHijo1);
+      addPersonCanvas(parejaHijo1, 'pareja');
+
       const hijo3 = new Person('h3', 'h3', 'h3', 'M', '2023-03-01');
-      const hijo4 = new Person('h4', 'h4', 'h4', 'M', '2023-04-01');
+      root.relacion.addChild(hijo3, madre);
+      addPersonCanvas(hijo3, 'hijo');
+
+      const hijo4 = new Person('h4', 'h4', 'h4', 'M', '2020-04-01');
+      root.relacion.addChild(hijo4, madre);
+      addPersonCanvas(hijo4, 'hijo');
+
       const hijo5 = new Person('h5', 'h5', 'h5', 'M', '2023-05-01');
       const hijo6 = new Person('h6', 'h6', 'h6', 'M', '2023-06-01');  
       const hijo7 = new Person('h7', 'h7', 'h7', 'M', '2023-07-01');
       const hijo8 = new Person('h8', 'h8', 'h8', 'M', '2023-08-01');
 
-      const parejaHijo1= new Person('p1', 'parejaHijo1', 'p1h1', 'F', '2023-01-01');
+      
       const hijo1Hijo1 = new Person('hijo1Hijo1', 'hijoHijo1', 'h1h1', 'M', '2023-01-01');
+      hijo1.relacion.addChild(hijo1Hijo1, parejaHijo1);
+      addPersonCanvas(hijo1Hijo1, 'hijo');
+
+
       const hijo2Hijo1 = new Person('hijo2Hijo1', 'hijo2Hijo1', 'h2h1', 'M', '2023-02-01');
+      hijo1.relacion.addChild(hijo2Hijo1, parejaHijo1);
+      addPersonCanvas(hijo2Hijo1, 'hijo');
+
+      const hijo3Hijo1 = new Person('hijo3Hijo1', 'hijo3Hijo1', 'h3h1', 'M', '2023-03-01');
+      hijo1.relacion.addChild(hijo3Hijo1, parejaHijo1);
+      addPersonCanvas(hijo3Hijo1, 'hijo');
 
       const parejaHijo2 = new Person('p2', 'parejaHijo2', 'p2h2', 'F', '2023-01-01');
+      hijo2.relacion.setPartner(parejaHijo2);
+      addPersonCanvas(parejaHijo2, 'pareja');
+
       const hijo1Hijo2 = new Person('hijo1Hijo2', 'hijoHijo2', 'h1h2', 'M', '2023-01-01');
+      hijo2.relacion.addChild(hijo1Hijo2, parejaHijo2);
+      addPersonCanvas(hijo1Hijo2, 'hijo');
+
       const hijo2Hijo2 = new Person('hijo2Hijo2', 'hijo2Hijo2', 'h2h2', 'M', '2023-02-01');
+      hijo2.relacion.addChild(hijo2Hijo2, parejaHijo2);
+      addPersonCanvas(hijo2Hijo2, 'hijo');
 
       const parejaHijo2Hijo1 = new Person('parejaHijo2Hijo1', 'parejaHijo2Hijo1', 'ph2h1', 'F', '2023-01-01');
       
 
-      root.relacion.setPartner(madre);
-      root.relacion.addChild(hijo1, madre);
-      root.relacion.addChild(hijo2, madre);
-      root.relacion.addChild(hijo3, madre);
+      
+      
+      
+      /*
       root.relacion.addChild(hijo4, madre);
       root.relacion.addChild(hijo5, madre);
       root.relacion.addChild(hijo6, madre);
       root.relacion.addChild(hijo7, madre);
-      root.relacion.addChild(hijo8, madre);
-/*
-      hijo1.relacion.setPartner(parejaHijo1);
-      hijo1.relacion.addChild(hijo1Hijo1, parejaHijo1);
+      root.relacion.addChild(hijo8, madre);*/
+
+      
+     /* hijo1.relacion.addChild(hijo1Hijo1, parejaHijo1);
       hijo1.relacion.addChild(hijo2Hijo1, parejaHijo1);
 
 
@@ -92,16 +132,16 @@ export default function TreeView({ shapeType = "grand", className }: TreeViewPro
       
 
       ///
-      addPersonToCanvasAndState(root, 'root');
-      addPersonToCanvasAndState(madre, 'pareja');
-      addPersonToCanvasAndState(hijo1, 'hijo');
-      addPersonToCanvasAndState(hijo2, 'hijo');
-      addPersonToCanvasAndState(hijo3, 'hijo');
-      addPersonToCanvasAndState(hijo4, 'hijo');
+      
+      
+      
+      
+     
+     /* addPersonToCanvasAndState(hijo4, 'hijo');
       addPersonToCanvasAndState(hijo5, 'hijo');
       addPersonToCanvasAndState(hijo6, 'hijo');
       addPersonToCanvasAndState(hijo7, 'hijo');
-      addPersonToCanvasAndState(hijo8, 'hijo');
+      addPersonToCanvasAndState(hijo8, 'hijo');*/
       //parejas
     //  addPersonToCanvasAndState(parejaHijo1, 'pareja');
      //addPersonToCanvasAndState(hijo1Hijo1, 'hijo');

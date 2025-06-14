@@ -41,9 +41,9 @@ const personSlice = createSlice({
       if (index !== -1) {
         state.people[index] = action.payload;
       }
-    }, modifyPeopleAddPerson(state, action: PayloadAction<Person[]>) {
+    }, 
+    modifyPeopleAddPerson(state, action: PayloadAction<Person[]>) {
       action.payload.forEach(newPerson => {
-        console.log(newPerson.positionX, newPerson.positionY);
         const existing = state.people.find(p => p.id === newPerson.id);
         if (existing) {
           existing.positionX = newPerson.positionX;
